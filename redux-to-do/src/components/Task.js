@@ -1,6 +1,6 @@
 import React from 'react'
 import {useSelector, useDispatch} from 'react-redux'
-import { deleteExistingTask, markExistingTaskAsComplete, showHideTaskUpdateForm, updateExistingTaskCompletion } from '../slices/taskSlice';
+import { deleteExistingTask, showHideTaskUpdateForm, updateExistingTaskCompletion } from '../slices/taskSlice';
 import { UpdateTask } from './UpdateTask';
 
 export const Task = (props) => {
