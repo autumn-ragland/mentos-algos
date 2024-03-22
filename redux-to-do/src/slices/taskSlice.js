@@ -1,5 +1,13 @@
 import { createSlice } from "@reduxjs/toolkit";
 
+function filterByTaskId(state,taskId){
+    return state.tasks.findIndex(el => el.id === taskId);
+}
+
+function getTaskIndex(state,taskIndex){
+    return state.tasks[taskIndex];
+}
+
 export const taskSlice = createSlice({
     name: 'task',
     initialState: {
@@ -11,38 +19,31 @@ export const taskSlice = createSlice({
             state.tasks = [...state.tasks, {description: newTask, complete: false, id: ('id' + (new Date()).getTime()), displayUpdate:false }]
         },
         updateExistingTaskDescription: (state, action) => {
-            const selectedTask = action.payload.id;
             const selectedTaskDescription = action.payload.updatedDescription;
-            const selectedTaskIndex = state.tasks.findIndex(el => el.id === selectedTask);
-            const updatedTasks = state.tasks.toSpliced(selectedTaskIndex, 1, {description: selectedTaskDescription, complete: state.tasks[selectedTaskIndex].complete, id: state.tasks[selectedTaskIndex].id, displayUpdate:false })
+            const selectedTaskIndex = filterByTaskId(state, action.payload.id);
+            const selectedTask = getTaskIndex(state,selectedTaskIndex);
+            const updatedTasks = state.tasks.toSpliced(selectedTaskIndex, 1, {description: selectedTaskDescription, complete: selectedTask.complete, id: selectedTask.id, displayUpdate: selectedTask.displayUpdate })
             state.tasks = updatedTasks;
         },
-        markExistingTaskAsComplete: (state, action) => {
-            const selectedTask = action.payload;
-            const selectedTaskIndex = state.tasks.findIndex(el => el.id === selectedTask);
-            const updatedTasks = state.tasks.toSpliced(selectedTaskIndex, 1, {description: state.tasks[selectedTaskIndex].description, complete: true, id: state.tasks[selectedTaskIndex].id, displayUpdate:false })
+        updateExistingTaskCompletion: (state, action) => {
+            const selectedTaskIndex = filterByTaskId(state, action.payload);
+            const selectedTask = getTaskIndex(state,selectedTaskIndex);
+            const updatedTasks = state.tasks.toSpliced(selectedTaskIndex, 1, {description: selectedTask.description, complete: !selectedTask.complete, id: selectedTask.id, displayUpdate: selectedTask.displayUpdate })
             state.tasks = updatedTasks;
         },
         deleteExistingTask: (state, action) => {
-            const selectedTask = action.payload;
-            const selectedTaskIndex = state.tasks.findIndex(el => el.id === selectedTask);
+            const selectedTaskIndex = filterByTaskId(state, action.payload);
             const updatedTasks = state.tasks.toSpliced(selectedTaskIndex, 1)
             state.tasks = updatedTasks;
         },
-        displayTaskUpdateForm: (state, action) => {
-            const selectedTask = action.payload;
-            const selectedTaskIndex = state.tasks.findIndex(el => el.id === selectedTask);
-            const updatedTasks = state.tasks.toSpliced(selectedTaskIndex, 1, {description: state.tasks[selectedTaskIndex].description, complete: state.tasks[selectedTaskIndex].complete, id: state.tasks[selectedTaskIndex].id, displayUpdate:true })
+        showHideTaskUpdateForm: (state, action) => {
+            const selectedTaskIndex = filterByTaskId(state, action.payload);
+            const selectedTask = getTaskIndex(state,selectedTaskIndex);
+            const updatedTasks = state.tasks.toSpliced(selectedTaskIndex, 1, {description: selectedTask.description, complete: selectedTask.complete, id: selectedTask.id, displayUpdate: !selectedTask.displayUpdate });
             state.tasks = updatedTasks;
         },
-        hideTaskUpdateForm: (state, action) => {
-            const selectedTask = action.payload;
-            const selectedTaskIndex = state.tasks.findIndex(el => el.id === selectedTask);
-            const updatedTasks = state.tasks.toSpliced(selectedTaskIndex, 1, {description: state.tasks[selectedTaskIndex].description, complete: state.tasks[selectedTaskIndex].complete, id: state.tasks[selectedTaskIndex].id, displayUpdate:false })
-            state.tasks = updatedTasks;
-        }
     }
 });
 
-export const {createNewTask, updateExistingTaskDescription, markExistingTaskAsComplete, deleteExistingTask, displayTaskUpdateForm, hideTaskUpdateForm} = taskSlice.actions;
+export const {createNewTask, updateExistingTaskDescription, updateExistingTaskCompletion, deleteExistingTask, showHideTaskUpdateForm} = taskSlice.actions;
 export default taskSlice.reducer;

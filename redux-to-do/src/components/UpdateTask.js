@@ -1,11 +1,11 @@
 import React, { useState } from 'react'
 import {useDispatch, useSelector} from 'react-redux'
-import { hideTaskUpdateForm, updateExistingTaskDescription } from '../slices/taskSlice';
+import { showHideTaskUpdateForm, updateExistingTaskDescription } from '../slices/taskSlice';
 
 export const  UpdateTask = (props) => {
-    const filterToDo = useSelector((state) => state.task.tasks.find((el) => el.id === props.id));
-    const [taskDescription, setTaskDescription] = useState(filterToDo.description);
-    const dispatch = useDispatch()
+    const task = useSelector((state) => state.task.tasks.find((el) => el.id === props.id));
+    const [taskDescription, setTaskDescription] = useState(task.description);
+    const dispatch = useDispatch();
 
     function handleSubmit(e) {
         e.preventDefault();
@@ -13,7 +13,7 @@ export const  UpdateTask = (props) => {
             return;
         }
         dispatch(updateExistingTaskDescription({id: props.id, updatedDescription: taskDescription}));
-        dispatch(hideTaskUpdateForm(props.id));
+        dispatch(showHideTaskUpdateForm(props.id));
     }
 
     return (
